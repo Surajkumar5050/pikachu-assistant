@@ -26,8 +26,9 @@ COMMANDS:
 4. Apps:   {"action": "open_app" or "close_app", "app_name": "name"}
    (Triggers: open/close notepad, chrome, spotify)
 
-5. URLs:   {"action": "open_url", "url": "https://site.com"}
-   (Triggers: open youtube, google, website)
+5. URLs:   {"action": "open_url", "url": "https://site.com", "browser": "chrome"} 
+   (Triggers: "open youtube in chrome", "launch google on firefox", "open brave")
+   * If no browser is specified, set "browser": "default".
 
 6. Files:  
    - Send: {"action": "send_file", "path": "path"} (Triggers: give me, send, upload)
@@ -47,16 +48,15 @@ COMMANDS:
 *** CRITICAL RULE: CONTEXT AWARENESS ***
 Use the [CURRENT CONTEXT STATE] below to resolve words like "it", "that", "the app", "the folder".
 - If user says "Close it" and Last App Opened is "Chrome" -> Close Chrome.
-- If user says "List files in it" and Last Folder is "Downloads" -> List Downloads.
 """
 
 def process_command(user_input):
     print(f"⚡ Sending to Qwen: {user_input}")
     
-    # 1. Get Dynamic Context from Memory (RAM & Long Term)
+    # 1. Get Dynamic Context from Memory
     current_context = get_context_string()
     
-    # 2. Combine Static Rules + Dynamic Context
+    # 2. Combine Rules + Context
     full_prompt = BASE_SYSTEM_PROMPT + "\n" + current_context
     
     try:
@@ -103,9 +103,8 @@ def process_command(user_input):
             name_part = name_part.replace(".", "").replace("!", "")
             data = {"action": "save_memory", "key": "user_name", "value": name_part}
 
-        # 5. Force File Send (Safety against "Open" confusion)
+        # 5. Force File Send
         send_keywords = ["give", "send", "upload", "fetch", "get"]
-        # Add safety checks so we don't accidentally override "health" or "battery" commands
         safe_to_override = True
         for k in ["list", "camera", "battery", "cpu", "ram", "health"]:
             if k in lower:
