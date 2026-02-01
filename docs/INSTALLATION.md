@@ -47,7 +47,7 @@ We've built a `setup.bat` script that handles the heavy lifting.
 
 ### **Step 1: Download the Code**
 
-> ⚠️ **Important:** Replace `YOUR_USERNAME` with the repository owner’s GitHub username.  
+> ⚠️ **Important:** Replace `YOUR_USERNAME` with the repository owner's GitHub username.  
 > Example (this project):
 > ```powershell
 > git clone https://github.com/YOUR_USERNAME/pikachu-assistant.git
@@ -90,7 +90,30 @@ We've built a `setup.bat` script that handles the heavy lifting.
 
 ---
 
-### **Step 4: Start the Assistant**
+### **Step 4: Configure Auto-Start on Windows Boot (Optional)**
+
+To make Pikachu start automatically when your computer turns on:
+
+1. **Create a Shortcut:**
+   - Navigate to your project folder (e.g., `C:\pikachu-assistant`)
+   - Right-click on `run_silent.vbs`
+   - Select **Show more options** → **Create shortcut**
+   - A file named `run_silent - Shortcut` will appear
+
+2. **Open the Startup Folder:**
+   - Press **Windows Key + R** to open the Run dialog
+   - Type exactly: `shell:startup`
+   - Press **Enter** - the Startup folder will open
+
+3. **Move the Shortcut:**
+   - Drag and drop the shortcut from Step 1 into the Startup folder
+   - (Optional) Remove " - Shortcut" from the filename to make it cleaner
+
+✅ **Done!** Pikachu will now start silently in the background every time you boot Windows.
+
+---
+
+### **Step 5: Start the Assistant**
 
 **Double-click `start_pikachu.bat`** to launch.
 
