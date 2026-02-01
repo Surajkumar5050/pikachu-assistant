@@ -47,11 +47,11 @@ We've built a `setup.bat` script that handles the heavy lifting.
 
 ### **Step 1: Download the Code**
 
-**Option A - Using Git:**
-```powershell
-git clone https://github.com/YOUR_USERNAME/pikachu-assistant.git
-cd pikachu-assistant
-```
+> ⚠️ **Important:** Replace `YOUR_USERNAME` with the repository owner’s GitHub username.  
+> Example (this project):
+> ```powershell
+> git clone https://github.com/Surajkumar5050/pikachu-assistant.git
+> ```
 
 **Option B - Manual Download:**
 1. Download the ZIP from GitHub
