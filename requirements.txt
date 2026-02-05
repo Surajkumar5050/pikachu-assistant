@@ -13,3 +13,4 @@ pywin32>=305
 pyperclip
 SpeechRecognition
 pyttsx3
+vosk
