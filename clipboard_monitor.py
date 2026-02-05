@@ -8,6 +8,7 @@ import time
 import threading
 import json
 import os
+import ctypes  # Added for Windows API access
 from datetime import datetime
 
 # File to store clipboard history
@@ -79,27 +80,50 @@ def add_to_history(text):
 
 
 def monitor_clipboard():
-    """Background thread that monitors clipboard for changes"""
+    """Background thread that monitors clipboard for changes using optimized checks"""
     global last_clipboard_content, monitoring_active
     
     print("👁️ Clipboard monitoring started...")
     
+    # [FIX] Setup Windows API to check sequence number without locking
+    try:
+        user32 = ctypes.windll.user32
+        user32.GetClipboardSequenceNumber.restype = ctypes.c_ulong
+        last_sequence_number = user32.GetClipboardSequenceNumber()
+        has_ctypes = True
+    except Exception as e:
+        print(f"⚠️ Windows API not available, falling back to basic polling: {e}")
+        has_ctypes = False
+    
     while monitoring_active:
         try:
-            # Get current clipboard content
-            current_content = pyperclip.paste()
+            should_check = False
             
-            # Check if content has changed
-            if current_content != last_clipboard_content:
-                last_clipboard_content = current_content
-                add_to_history(current_content)
+            # [FIX] Logic Step 1: Check Sequence Number if on Windows
+            if has_ctypes:
+                current_sequence_number = user32.GetClipboardSequenceNumber()
+                if current_sequence_number != last_sequence_number:
+                    last_sequence_number = current_sequence_number
+                    should_check = True
+            else:
+                # Fallback for non-Windows systems
+                should_check = True
+
+            # [FIX] Logic Step 2: Only lock/read clipboard if necessary
+            if should_check:
+                current_content = pyperclip.paste()
+                
+                # Check if content has changed (Validation)
+                if current_content != last_clipboard_content:
+                    last_clipboard_content = current_content
+                    add_to_history(current_content)
             
-            # Check every 0.5 seconds
-            time.sleep(0.5)
+            # [FIX] Logic Step 3: Sleep slightly longer to prevent CPU hogging
+            time.sleep(1.0) 
             
         except Exception as e:
             # Silently handle errors to keep monitoring running
-            print(f"Clipboard monitor error: {e}")
+            # print(f"Clipboard monitor error: {e}")
             time.sleep(1)
     
     print("👁️ Clipboard monitoring stopped.")
