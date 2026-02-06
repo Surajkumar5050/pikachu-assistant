@@ -250,6 +250,7 @@ zyron-assistant/
 │               ├── finder.py          # Smart search engine
 │               └── tracker.py         # File activity logger
 │
+│
 ├── browser_extension/         # Chrome extension for tab monitoring
 │   ├── manifest.json
 │   ├── background.js
@@ -397,8 +398,13 @@ We love contributions! Here's how:
 
 ### Development Setup
 ```bash
+<<<<<<< HEAD
 git clone https://github.com/Surajkumar5050/zyron-assistant.git
 cd zyron-assistant
+=======
+git clone https://github.com/Surajkumar5050/pikachu-assistant.git
+cd pikachu-assistant
+>>>>>>> upstream/main
 git checkout -b dev
 pip install -e .
 pytest tests/
@@ -431,9 +437,9 @@ Built with amazing open-source tools:
 
 ## Support & Community
 
-- **Documentation**: [Full Wiki](https://github.com/Surajkumar5050/zyron-assistant/tree/main/docs)
-- **Bug Reports**: [Issue Tracker](https://github.com/Surajkumar5050/zyron-assistant/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Surajkumar5050/zyron-assistant/discussions)
+- **Documentation**: [Full Wiki](https://github.com/Surajkumar5050/pikachu-assistant/tree/main/docs)
+- **Bug Reports**: [Issue Tracker](https://github.com/Surajkumar5050/pikachu-assistant/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Surajkumar5050/pikachu-assistant/discussions)
 
 ---
 

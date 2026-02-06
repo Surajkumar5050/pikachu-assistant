@@ -1,70 +1,66 @@
-# 👥 Project Contributors
+# Project Contributors
 
-Thank you to everyone who has contributed to the ⚡ **Pikachu Desktop Assistant**! Your time and effort make this project possible.
+We extend our sincere gratitude to everyone who has contributed to the development and success of the **Zyron Desktop Assistant**. This project thrives on community collaboration.
 
----
+## Core Team
 
-## 👑 Core Maintainer
+| Name | Role | GitHub |
+| :--- | :--- | :--- |
+| **Suraj Kumar Sahoo** | Creator & Lead Maintainer | [@Surajkumar5050](https://github.com/Surajkumar5050) |
 
-* **Suraj Kumar Sahoo** - *Initial Work & Architecture* - [@Surajkumar5050](https://github.com/Surajkumar5050)
+## Major Contributors
 
----
+Special thanks to the developers who have dedicated their time to improve the codebase.
 
-## 🌟 Awesome Contributors
-
-*No other contributors yet. Be the first to join!*
-
----
-
-## 💡 How to Get on This List
-
-If you've contributed code, documentation, or bug reports, please feel free to add your name to this list in your Pull Request!
-
-### Contribution Types We Recognize:
-
-- 💻 **Code**: New features, bug fixes, refactoring
-- 📖 **Documentation**: README improvements, guides, tutorials
-- 🐛 **Bug Reports**: Detailed issue reports that help us improve
-- 💡 **Ideas**: Feature suggestions and design feedback
-- 🔍 **Testing**: QA, beta testing, compatibility reports
-- 🎨 **Design**: UI/UX improvements, icons, branding
-- 🌍 **Translation**: Internationalization support (future)
+| Name | Key Contributions | GitHub |
+| :--- | :--- | :--- |
+| **ThaRealJozef** | Firefox Integration, Offline AI Engine, Architecture Refactor | [@ThaRealJozef](https://github.com/ThaRealJozef) |
 
 ---
 
-## 📝 Contribution Guidelines
+## How to Contribute
 
-Want to contribute? Check out our [Contributing Guide](docs/CONTRIBUTING.md) for:
+We welcome contributions of all kinds! Whether you are fixing bugs, improving documentation, or proposing new features, your help is appreciated.
 
-- Code style guidelines
-- Pull request process
-- Development setup
-- Testing requirements
+### Recognition Key
+We follow the All-Contributors spirit to recognize all types of work:
 
----
+| Symbol | Meaning | Symbol | Meaning |
+| :---: | :--- | :---: | :--- |
+| Code | Features, Fixes | Doc | Documentation |
+| Bug | Bug Reporting | Design | README UI |
+| Idea | Ideas & Planning | Tool | Plugin/Tooling |
 
-## 🙏 Special Thanks
-
-Special recognition for significant contributions:
-
-*This section will be updated as the project grows!*
-
----
-
-## 📊 Contribution Stats
-
-| Category | Count |
-|----------|-------|
-| Total Contributors | 1 |
-| Code Contributors | 1 |
-| Documentation Contributors | 1 |
-| Bug Reporters | 0 |
-| Feature Requesters | 0 |
-
-*Last updated: February 2026*
+### Adding Yourself
+If you have contributed to the project, please open a Pull Request to add your name to the table above.
 
 ---
 
-**Join us in building the future of desktop automation! 🚀**
+## Project Statistics
 
-*See something you can improve? Open a PR and add yourself to this list!*
+> Community growth as of February 2026
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>Contributor Visualizer</b><br><br>
+      <a href="https://github.com/Surajkumar5050/zyron-assistant/graphs/contributors">
+        <img src="https://contrib.rocks/image?repo=Surajkumar5050/zyron-assistant" />
+      </a>
+    </td>
+    <td align="center" width="50%">
+      <b>Growth Trajectory</b><br><br>
+      <a href="https://star-history.com/#Surajkumar5050/zyron-assistant&Date">
+        <img src="https://api.star-history.com/svg?repos=Surajkumar5050/zyron-assistant&type=Date" />
+      </a>
+    </td>
+  </tr>
+</table>
+
+* **Total Contributors:** 2
+* **Active Pull Requests:** [View List](https://github.com/Surajkumar5050/zyron-assistant/pulls)
+* **Open Issues:** [View List](https://github.com/Surajkumar5050/zyron-assistant/issues)
+
+---
+
+*Thank you for helping us build the future of desktop automation!*
