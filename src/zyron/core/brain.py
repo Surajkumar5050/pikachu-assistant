@@ -1,12 +1,7 @@
 import ollama
 import json
-import os
-from dotenv import load_dotenv
 from .memory import get_context_string
-
-
-load_dotenv()
-MODEL_NAME = os.getenv("MODEL_NAME", "qwen2.5-coder:7b")
+from src.zyron.utils.settings import settings
 
 
 BASE_SYSTEM_PROMPT = """
@@ -87,7 +82,7 @@ def process_command(user_input):
     
     try:
         response = ollama.chat(
-            model=MODEL_NAME, 
+            model=settings.MODEL_NAME, 
             messages=[
                 {'role': 'system', 'content': full_prompt},
                 {'role': 'user', 'content': user_input},

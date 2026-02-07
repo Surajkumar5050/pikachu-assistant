@@ -21,3 +21,9 @@ file_activity_log.json
 audio_recording.wav
 *.jpg
 *.png
+
+# Local Agent Data (Machine-specific)
+.agents/
+
+# Generated Media (Don't upload screenshots/recordings)
+saved_media/
