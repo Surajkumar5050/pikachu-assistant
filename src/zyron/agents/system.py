@@ -611,6 +611,45 @@ def execute_find_file(action_data):
         }
     
 
+def system_panic():
+    """
+    Emergency panic mode - Instantly secures the PC.
+    Actions: Minimize windows, mute audio, clear clipboard, lock workstation
+    """
+    print("🚨 PANIC MODE ACTIVATED!")
+    
+    try:
+        import ctypes
+        import pyperclip
+        
+        # 1. Minimize all windows
+        print("   → Minimizing all windows...")
+        pyautogui.hotkey('win', 'd')
+        
+        # 2. Silence Audio: Mutes the system volume immediately.
+        print("   → Muting system audio...")
+        try:
+            pyautogui.press('volumemute')
+        except:
+            pass 
+        
+        # 3. Clear clipB History
+        print("   → Clearing clipboard...")
+        try:
+            pyperclip.copy("")
+        except:
+            pass
+        
+        # 4. Lock Syystem
+        print("   → Locking Windows...")
+        ctypes.windll.user32.LockWorkStation()
+        
+        print("✅ System secured.")
+        
+    except Exception as e:
+        print(f"❌ Panic mode error: {e}")
+
+
 def execute_command(cmd_json):
     if not cmd_json: return
     action = cmd_json.get("action")
@@ -623,6 +662,7 @@ def execute_command(cmd_json):
     elif action == "system_sleep": system_sleep()
     elif action == "shutdown_pc": shutdown_pc()
     elif action == "restart_pc": restart_pc()
+    elif action == "system_panic": system_panic()
     elif action == "record_audio": 
         duration = cmd_json.get("duration", 10)
         return record_audio(duration)

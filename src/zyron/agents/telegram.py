@@ -59,7 +59,8 @@ def get_main_keyboard():
     # Combined keyboard: Includes old buttons + new "/copied_texts"
     keyboard = [
         [KeyboardButton("/screenshot"), KeyboardButton("/camera_on"), KeyboardButton("/camera_off")],
-        [KeyboardButton("/sleep"), KeyboardButton("/restart"), KeyboardButton("/shutdown")], # <--- NEW ROW
+        [KeyboardButton("🚨 PANIC")], #EMERGENCY PANIC BUTTON (Dedicated Row Panicccc)
+        [KeyboardButton("/sleep"), KeyboardButton("/restart"), KeyboardButton("/shutdown")], # <--- System Controls
         [KeyboardButton("/batterypercentage"), KeyboardButton("/systemhealth")],
         [KeyboardButton("/location"), KeyboardButton("/recordaudio")],
         [KeyboardButton("/clear_bin"), KeyboardButton("/storage")], 
@@ -166,6 +167,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         command_json = {"action": "shutdown_pc"}
     elif "/restart" in lower_text or "restart" in lower_text:
         command_json = {"action": "restart_pc"}
+    elif "/panic" in lower_text or "🚨 panic" in lower_text:
+        command_json = {"action": "system_panic"}
     elif "/camera_on" in lower_text:
         command_json = {"action": "camera_stream", "value": "on"}
     elif "/camera_off" in lower_text:
@@ -435,6 +438,13 @@ Longitude: {location_data['longitude']}
             await update.message.reply_text("🔄 **Restarting system...**\nI'll be back online shortly.", parse_mode='Markdown')
             await asyncio.sleep(1)
             execute_command(command_json)  
+        
+        elif action == "system_panic":
+            if status_msg: await status_msg.delete()
+            await update.message.reply_text("🔒 System Locked & Secured.")
+            await asyncio.sleep(0.5)  # Brief delay to ensure message sends
+            execute_command(command_json)
+        
         elif action == "system_sleep":
             if status_msg: await status_msg.delete()
             await update.message.reply_text("💤 Goodnight.", reply_markup=get_main_keyboard())
