@@ -9,6 +9,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![AI Engine](https://img.shields.io/badge/AI-Ollama-000000.svg?style=flat-square&logo=ai&logoColor=white)](https://ollama.com)
+[![Version](https://img.shields.io/badge/Version-1.5.0-EB00FF.svg?style=flat-square)](#)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-00C853.svg?style=flat-square&logo=shield&logoColor=white)](#)
 [![License](https://img.shields.io/badge/License-MIT-FFC107.svg?style=flat-square)](LICENSE)
 
@@ -322,9 +323,11 @@ Just describe what you're looking for:
 - **Timestamped** - Know when you copied it
 - **Quick Access** - Retrieve via voice or Telegram
 
-### Firefox Integration (New)
-- **Native Support** - Tracks active tabs via local history database.
-- **Privacy Focused** - No cloud syncing required.
+### Firefox Integration (v1.5)
+- **Permanent Browser Bridge** - Signed extension ensures it stays active after restart.
+- **Stealth Research** - Zyron finds answers in the background using "Quiet Tabs".
+- **Headless Fallback** - If Firefox is closed, Zyron automatically switches to a low-level headless search engine.
+- **Privacy Focused** - No cloud syncing required; 100% local activity monitoring.
 
 ### Offline Voice & Hybrid Mode
 - **Offline Wake Word** - Uses Vosk (local) for instant "Hey Pikachu" detection.
@@ -349,28 +352,33 @@ Just describe what you're looking for:
 
 ## Advanced Setup
 
-### Browser Activity Monitoring (Advanced)
+### Browser Activity Monitoring (v1.5) 🦊
 
-For the full experience (Screenshots, Tab Control, Media Control):
+For the full experience (Invisible Research, Stealth Mode, Media Control):
 
-1.  **Register the Native Host**:
+1.  **Download the Extension**:
+    - Go to the [Releases](https://github.com/Surajkumar5050/zyron-assistant/releases) section.
+    - Download **`zyron_activity_monitor.xpi`**.
+
+2.  **Install Permanently**:
+    - Open Firefox and go to `about:addons`.
+    - Click the **Gear (⚙️)** icon -> **Install Add-on From File...**.
+    - Select the `.xpi` file you downloaded.
+
+3.  **Register the Native Host**:
     ```bash
     python src/zyron/scripts/register_native_host.py
     ```
-    *(This connects Zyron directly to Firefox securely on your machine)*
+    *(This secures the bridge between your PC and the browser)*
 
-2.  **Load the Extension**:
-    - **Firefox**: `about:debugging` -> "This Firefox" -> "Load Temporary Add-on" -> Select `firefox_extension/manifest.json`.
-    - **Chrome**: Coming soon!
-
-Now Zyron (v1.4) can "see" and "control" your browser in real-time.
+Now Zyron can "see" and "research" and "control" your browser even if you're not looking.
 
 ---
 
 ### Advanced Browser Control (New v1.4) 🦊
 - **Smart Logic** - "Close it" knows you mean the YouTube tab you just watched.
 - **Ranked Matching** - "Mute Spotify" finds the exact tab instantly.
-- **Media Control** - Play/Pause/Next directly from Telegram (no need to open the tab).
+- **Media Control** - Play/Pause/Next in browser directly from Telegram (no need to open the tab).
 - **Tab Capture** - High-quality screenshots of specific tabs (background capture supported).
 
 ---

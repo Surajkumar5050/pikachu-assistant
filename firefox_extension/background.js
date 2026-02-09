@@ -22,7 +22,10 @@ function connectToNativeHost() {
     }
     else if (response.action === "create_tab") {
       if (response.url) {
-        chrome.tabs.create({ url: response.url, active: response.active !== false });
+        chrome.tabs.create({ url: response.url, active: response.active !== false }, (tab) => {
+          console.log("✅ Background Tab Created:", tab.id);
+          nativePort.postMessage({ action: "tab_created", tabId: tab.id });
+        });
       }
     }
     else if (response.action === "media_control") {
@@ -61,23 +64,26 @@ function connectToNativeHost() {
         });
       }
     }
-    // --- NAVIGATION AGENT ---
     else if (["highlight", "click", "read", "scroll", "type", "scan", "press_key"].includes(response.action)) {
       console.log("🧭 NAV COMMAND RECEIVED:", response);
-      // Send to Content Script in the ACTIVE TAB
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs && tabs[0]) {
-          console.log("Target Tab:", tabs[0].id, tabs[0].url);
-          chrome.tabs.sendMessage(tabs[0].id, response).then(reply => {
-            console.log("✅ Content Script Replied:", reply);
-            if (reply) {
-              nativePort.postMessage({ action: "navigation_result", data: reply });
-            }
-          }).catch(err => {
-            console.error("Nav Error:", err);
-          });
-        }
-      });
+
+      const targetTabId = response.tabId;
+
+      if (targetTabId) {
+        // Targeted Tab Execution
+        chrome.tabs.sendMessage(targetTabId, response).then(reply => {
+          if (reply) nativePort.postMessage({ action: "navigation_result", data: reply });
+        }).catch(err => console.error("Nav Error on Tab", targetTabId, err));
+      } else {
+        // Fallback to Active Tab
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs && tabs[0]) {
+            chrome.tabs.sendMessage(tabs[0].id, response).then(reply => {
+              if (reply) nativePort.postMessage({ action: "navigation_result", data: reply });
+            }).catch(err => console.error("Nav Error on Active Tab:", err));
+          }
+        });
+      }
     }
   });
 

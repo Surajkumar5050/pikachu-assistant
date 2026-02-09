@@ -17,7 +17,11 @@ class WakeWordEngine:
         self.audio_queue = queue.Queue()
         
         # Wake words to listen for (lower case)
-        self.wake_words = ["pikachu", "pika", "hey pikachu"]
+        self.wake_words = [
+            "pikachu", "pika", "hey pikachu", "hey you", 
+            "he got true", "gotcha", "got you", 
+            "be got to", "because to", "he got you"
+        ]
         print("✅ Offline Wake Word Engine Ready.")
 
     def _callback(self, indata, frames, time, status):
@@ -25,6 +29,11 @@ class WakeWordEngine:
         if status:
             print(status, file=sys.stderr)
         self.audio_queue.put(bytes(indata))
+
+    def stop(self):
+        """Stops the engine and clears the queue."""
+        self.audio_queue = queue.Queue()
+        print("🛑 Wake Word Engine Stopped.")
 
     def listen(self):
         """
@@ -34,16 +43,27 @@ class WakeWordEngine:
         print("\n👂 Waiting for 'Pikachu' (Offline)...")
         
         with sd.RawInputStream(samplerate=16000, blocksize=8000, dtype='int16',
-                               channels=1, callback=self._callback):
+                                channels=1, callback=self._callback):
              while True:
-                data = self.audio_queue.get()
+                try:
+                    data = self.audio_queue.get(timeout=0.2) # Fixed: Add timeout for SIGINT/CTRL+C
+                except queue.Empty:
+                    continue
+
                 if self.recognizer.AcceptWaveform(data):
                     result = json.loads(self.recognizer.Result())
                     text = result.get("text", "")
+                    if text:
+                        print(f"   [Debug] Full heard: '{text}'")
                     
                     if any(word in text for word in self.wake_words):
                         print(f"⚡ Wake Word Detected: '{text}'")
                         return text
+                else:
+                    partial = json.loads(self.recognizer.PartialResult())
+                    p_text = partial.get("partial", "")
+                    if p_text:
+                        print(f"   [Debug] Partial: '{p_text}'", end="\r")
 
     def capture_command(self, timeout=5):
         """

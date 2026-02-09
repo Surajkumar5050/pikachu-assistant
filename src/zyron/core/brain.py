@@ -13,6 +13,14 @@ BASE_SYSTEM_PROMPT = """
 You are Zyron, a smart laptop assistant with memory.
 Your ONLY output must be valid JSON.
 
+*** CORE CLASSIFICATION RULES ***
+1. ACTION COMMAND: If the user wants you to DO something on the laptop (open/close apps, files, browser tabs, screenshots, check battery/health, etc.).
+2. WEB RESEARCH: If the user asks a QUESTION about facts, people, prices, or current events (e.g. "Who is Sam Altman?", "Bitcoin price").
+3. GENERAL CHAT: Only for greetings, simple conversation, or if no other action fits.
+
+If the request is a QUESTION requiring a search, ALWAYS use "web_research".
+If the request is an instruction to OPERATE the computer, use the specific ACTION command.
+
 COMMANDS:
 1. Camera: {"action": "camera_stream", "value": "on/off"}
    (Triggers: turn on/off camera, live video, stop video)
@@ -88,6 +96,10 @@ browser_control is ONLY for "close TAB", "mute TAB" - actual tab operations!
     Examples:
     - "click on shorts" -> {"action": "browser_nav", "sub_action": "click", "target": "shorts"}
     - "click the login button" -> {"action": "browser_nav", "sub_action": "click", "target": "login"}
+
+20. Web Research: {"action": "web_research", "query": "search query"}
+    (Triggers: "Who is...", "What is...", "How much is...", "Look up...", "Research...", "Find info about...")
+    *** Use this when the user asks a QUESTION that requires browsing the web ***
 
 *** MULTI-COMMAND CHAINING ***
 If the user wants MULTIPLE actions in sequence, return a JSON ARRAY of actions.
@@ -233,6 +245,20 @@ def process_command(user_input):
             found_path = data.get('path') or data.get('url') or data.get('app_name')
             if found_path:
                 data = {"action": "send_file", "path": found_path}
+
+        # 12. Force Web Research
+        research_triggers = ["who is", "what is", "how much", "tell me about", "look up", "research", "search for", "find info", "is there", "are there"]
+        is_question_str = any(lower.startswith(t) for t in ["who", "what", "how", "where", "why", "when", "is ", "are ", "tell me", "can you find"])
+        is_actual_question = lower.endswith("?") or is_question_str
+        
+        # Only override if it's currently general chat or a weak match
+        # AND it doesn't look like a system command (e.g. "What's my battery")
+        system_keywords = ["battery", "health", "cpu", "ram", "storage", "recycle", "clipboard", "copied", "screenshot", "activities", "open", "close"]
+        looks_like_system = any(k in lower for k in system_keywords)
+
+        current_action = data[0].get("action") if isinstance(data, list) else data.get("action")
+        if (is_actual_question or any(t in lower for t in research_triggers)) and current_action == "general_chat" and not looks_like_system:
+            data = {"action": "web_research", "query": user_input}
 
         # Normalize to list for multi-command support
         if isinstance(data, list):

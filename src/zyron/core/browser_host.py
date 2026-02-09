@@ -106,12 +106,12 @@ def main():
                         pass
             
             # Action: Navigation Result
-            elif message.get("action") == "navigation_result":
-                # Save the result from the content script to a file
+            elif message.get("action") == "navigation_result" or message.get("action") == "tab_created":
+                # Save the result from the content script or background script to a file
                 nav_path = Path(os.environ.get('TEMP', '')) / 'zyron_nav_result.json'
                 try:
                     with open(nav_path, 'w') as f:
-                        json.dump(message.get("data", {}), f)
+                        json.dump(message if message.get("action") == "tab_created" else message.get("data", {}), f)
                 except Exception as e:
                     send_message({"status": "error", "message": str(e)})
 

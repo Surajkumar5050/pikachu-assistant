@@ -43,6 +43,9 @@ dependencies = [
     "python-dotenv",
     "screen-brightness-control",
     "scipy",
+    "idna",
+    "numpy",
+    "pyperclip",
 ]
 
 [project.scripts]

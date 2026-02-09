@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 MEMORY_FILE = "long_term_memory.json"
 
@@ -42,9 +43,12 @@ def update_context(action_type, target=None):
 def get_context_string():
     """Returns a summary of BOTH Short-Term and Long-Term memory."""
     long_term_data = load_long_term() 
+    now = datetime.now()
+    current_time = now.strftime("%A, %B %d, %Y - %H:%M:%S")
     
     return f"""
     [CURRENT CONTEXT STATE]
+    - Current Time: {current_time}
     - KNOWN USER INFO: {long_term_data}
     - Last App Opened: {short_term['last_app_opened']}
     - Last Browser Used: {short_term['last_browser_used']}

@@ -13,6 +13,7 @@ import json
 import zyron.features.activity as activity_monitor
 import zyron.features.clipboard as clipboard_monitor
 import zyron.features.files.finder as file_finder  # Uses the new smart finder we just created
+import zyron.agents.researcher as researcher
 
 PROCESS_NAMES = {
     # Browsers
@@ -651,6 +652,23 @@ def system_panic():
 
 
 def execute_command(cmd_json):
+    """
+    Main dispatcher for Zyron commands.
+    Supports single dict or list of dicts (chaining).
+    """
+    if not cmd_json: return
+    
+    if isinstance(cmd_json, list):
+        results = []
+        for cmd in cmd_json:
+            res = _single_execute(cmd)
+            if res and isinstance(res, str):
+                results.append(res)
+        return " ".join(results) if results else "Done."
+    
+    return _single_execute(cmd_json)
+
+def _single_execute(cmd_json):
     if not cmd_json: return
     action = cmd_json.get("action")
     
@@ -695,3 +713,9 @@ def execute_command(cmd_json):
 
     elif action == "find_file":
         return execute_find_file(cmd_json)
+
+    elif action == "web_research":
+        return researcher.perform_research(cmd_json.get("query"))
+
+    elif action == "general_chat":
+        return cmd_json.get("response")

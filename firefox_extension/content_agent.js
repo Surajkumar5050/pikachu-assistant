@@ -137,7 +137,7 @@ function readPage() {
         // 2. aggressive noise removal
         const noiseSelectors = [
             'script', 'style', 'noscript', 'iframe', 'svg', 'button', 'input', 'form',
-            'nav', 'footer', 'header', 'aside',
+            'nav', 'aside',
             '.ad', '.ads', '.advertisement', '.social-share', '.share-buttons',
             '[role="banner"]', '[role="contentinfo"]', '[role="navigation"]', '[role="search"]',
             // wikipedia specific

@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Zyron Activity Monitor (Firefox)",
+    "name": "Zyron Activity Monitor",
     "version": "1.0.0",
     "description": "Monitors browser tabs for Zyron Desktop Assistant",
     "permissions": [
@@ -13,8 +13,12 @@
     ],
     "content_scripts": [
         {
-            "matches": ["<all_urls>"],
-            "js": ["content_agent.js"]
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content_agent.js"
+            ]
         }
     ],
     "background": {
@@ -33,7 +37,12 @@
     "browser_specific_settings": {
         "gecko": {
             "id": "zyron@assistant.local",
-            "strict_min_version": "109.0"
+            "strict_min_version": "140.0",
+            "data_collection_permissions": {
+                "required": [
+                    "none"
+                ]
+            }
         }
     },
     "icons": {

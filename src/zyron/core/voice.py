@@ -23,7 +23,7 @@ import os
 OFFLINE_MODE = os.getenv("OFFLINE_MODE", "false").lower() == "true"
 
 # We accept variations because Google sometimes mishears "Pikachu"
-WAKE_WORDS = ["pikachu", "pika", "peek a", "pick a", "picacho", "hey you"]
+WAKE_WORDS = ["pikachu", "pika", "peek a", "pick a", "picacho", "hey you", "he got true", "gotcha", "got you", "be got to", "because to", "he got you" ]
 
 def speak(text):
     print(f"⚡ Zyron: {text}")

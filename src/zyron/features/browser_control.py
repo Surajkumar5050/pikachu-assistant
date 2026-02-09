@@ -7,6 +7,7 @@ COMMAND_FILE_PATH = Path(os.environ.get('TEMP', '')) / 'zyron_firefox_commands.j
 
 def send_browser_command(action, **kwargs):
     """Writes a command to the shared JSON file for the native host to pick up."""
+    # Ensure tabId is passed if provided
     command = {"action": action, **kwargs}
     
     try:
@@ -24,10 +25,8 @@ def send_browser_command(action, **kwargs):
         with open(COMMAND_FILE_PATH, 'w') as f:
             json.dump(commands, f)
         
-        print(f"⚡ Browser Command Queued: {action} (Queue Size: {len(commands)})")
-        
-        # if the action expects a result (like "read" or "scan"), wait for it
-        if action in ["read", "scan"]:
+        # if the action expects a result (like "read" or "scan" or "create_tab"), wait for it
+        if action in ["read", "scan", "create_tab", "click", "type", "scroll"]:
             return wait_for_result()
             
         return True
@@ -35,7 +34,7 @@ def send_browser_command(action, **kwargs):
         print(f"❌ Failed to queue browser command: {e}")
         return False
 
-def wait_for_result(timeout=5):
+def wait_for_result(timeout=10):
     """Polls for the result file from the native host."""
     nav_path = Path(os.environ.get('TEMP', '')) / 'zyron_nav_result.json'
     
@@ -51,6 +50,8 @@ def wait_for_result(timeout=5):
                 time.sleep(0.1)
                 with open(nav_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
+                    # Handle direct message or wrapped data
+                    if not data: continue
                 try: os.remove(nav_path)
                 except: pass
                 return data
@@ -66,51 +67,34 @@ def close_tab(tab_id):
 def mute_tab(tab_id, mute=True):
     return send_browser_command("mute_tab", tabId=tab_id, value=mute)
 
-def create_tab(url):
+def create_tab(url, active=True):
+    """Returns the tabId of the created tab."""
+    result = send_browser_command("create_tab", url=url, active=active)
+    if isinstance(result, dict) and "tabId" in result:
+        return result["tabId"]
+    return None
+
+def navigate(url, tab_id=None):
+    if tab_id:
+        return send_browser_command("navigate", url=url, tabId=tab_id)
     return send_browser_command("create_tab", url=url)
 
-def media_control(tab_id, command):
-    """command: play, pause"""
-    return send_browser_command("media_control", tabId=tab_id, command=command)
-
-def capture_tab(tab_id):
-    """Triggers a screenshot of the visible tab."""
-    pass
-
-def capture_tab_with_window(tab_id, window_id):
-    return send_browser_command("capture_tab", tabId=tab_id, windowId=window_id)
-
-# --- NAVIGATION AGENT COMMANDS ---
-def navigate(url):
-    return send_browser_command("create_tab", url=url)
-
-def click_element(selector):
-    """Simulates a click on an element (supports CSS selector or Zyron ID)."""
+def click_element(selector, tab_id=None):
     if str(selector).isdigit():
         selector = f'[data-zyron-id="{selector}"]'
-    return send_browser_command("click", selector=selector)
+    return send_browser_command("click", selector=selector, tabId=tab_id)
 
-def type_text(selector, text):
-    """Types text into an input field (supports CSS selector or Zyron ID)."""
+def type_text(selector, text, tab_id=None):
     if str(selector).isdigit():
         selector = f'[data-zyron-id="{selector}"]'
-    return send_browser_command("type", selector=selector, text=text)
+    return send_browser_command("type", selector=selector, text=text, tabId=tab_id)
 
-def press_key(selector, key="Enter"):
-    """Presses a key on an element."""
-    if str(selector).isdigit():
-        selector = f'[data-zyron-id="{selector}"]'
-    return send_browser_command("press_key", selector=selector, key=key)
+def scroll_page(direction="down", tab_id=None):
+    return send_browser_command("scroll", direction=direction, tabId=tab_id)
 
-def scroll_page(direction="down"):
-    """Scrolls the page up/down/top/bottom."""
-    return send_browser_command("scroll", direction=direction)
+def read_page(tab_id=None):
+    return send_browser_command("read", tabId=tab_id)
 
-def read_page():
-    """Extracts main text from the page."""
-    return send_browser_command("read")
-
-def scan_page():
-    """Scans the page for interactive elements."""
-    return send_browser_command("scan")
+def scan_page(tab_id=None):
+    return send_browser_command("scan", tabId=tab_id)
 
