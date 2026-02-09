@@ -298,7 +298,7 @@ zyron-assistant/
 
 ---
 
-## Latest Features (v1.3)
+## Latest Features (v1.5.0) 🚀
 
 ### Intelligent File Tracking
 - **Automatic Monitoring** - Tracks every file you open across all applications
@@ -391,11 +391,21 @@ A: 2-4 GB idle, 6-8 GB during active AI processing.
 **Q: Can I use different AI models?**  
 A: Yes! Any Ollama-compatible model works. Just update `MODEL_NAME` in `.env`
 
-**Q: Does auto-start slow down my PC?**  
-A: No. It launches after Windows loads with minimal impact.
-
 **Q: Do I need Telegram?**  
-A: For remote control, yes. Voice-only mode is coming in future releases.
+A: For remote control, yes. Voice-only mode is available but remote features require the bot.
+
+---
+
+## 🛠️ Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **ModuleNotFoundError** | Run `setup.bat`. It will automatically sync your missing libraries. |
+| **Firefox Bridge Not Connected** | Run `python src/zyron/scripts/register_native_host.py` and restart Firefox. |
+| **Wake Word Not Detected** | Check your default Windows Microphone settings and ensure it's not muted. |
+| **Telegram Bot Not Responding** | Double-check your `TELEGRAM_TOKEN` in the `.env` file. |
+
+---
 
 ---
 
