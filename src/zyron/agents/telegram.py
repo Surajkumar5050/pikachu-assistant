@@ -1037,9 +1037,14 @@ Longitude: {location_data['longitude']}
         else:
             # Generic action execution
             try:
-                execute_command(command_json)
+                result = execute_command(command_json)
                 if status_msg: await status_msg.delete()
-                await update.message.reply_text(f"✅ Action Complete: {action}", reply_markup=get_main_keyboard())
+                
+                if action == "web_research" and result:
+                    # Professional synthesis delivery
+                    await update.message.reply_text(f"🔍 **Research Result:**\n\n{result}", parse_mode='Markdown', reply_markup=get_main_keyboard())
+                else:
+                    await update.message.reply_text(f"✅ Action Complete: {action}", reply_markup=get_main_keyboard())
             except Exception as e:
                 if status_msg: await status_msg.delete()
                 await update.message.reply_text(f"❌ Error: {e}", reply_markup=get_main_keyboard())
