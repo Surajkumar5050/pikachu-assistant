@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zyron-assistant"
-version = "1.4.0"
+version = "1.5.1"
 description = "Your Intelligent Desktop Companion - 100% Local, 100% Private"
 readme = "README.md"
 requires-python = ">=3.9"
