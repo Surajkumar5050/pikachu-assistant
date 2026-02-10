@@ -41,5 +41,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n⚡ System shutting down.")
         # Stop file tracking on shutdown
-        file_tracker.stop_tracking()
+        # file_tracker.stop_tracking()
         
