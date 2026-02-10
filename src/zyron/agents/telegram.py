@@ -1429,34 +1429,40 @@ if __name__ == "__main__":
         # Increase connection timeout to handle slow uploads better
         
         # Run
+        # Initialize Application
+        application = ApplicationBuilder().token(TOKEN).read_timeout(60).write_timeout(60).build()
+        
+        # Handlers
+        application.add_handler(CommandHandler("start", start_command))
+        application.add_handler(CallbackQueryHandler(handle_clipboard_callback, pattern="^copy_"))
+        application.add_handler(CallbackQueryHandler(handle_zombie_callback, pattern="^z(kill|allow|ignore)_"))
+        application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+        
+        # Run
         print("🤖 Bot is pooling...")
         
         # Auto-start Reaper if we remember the user
         saved_id = load_chat_id()
         if saved_id:
             print(f"🔄 Auto-starting Zombie Reaper for Chat ID: {saved_id}")
-            # We need to run this *after* polling starts, or use the loop correctly.
-            # Application.run_polling() blocks. 
-            # But we can access the loop and schedule it via a post_init hook?
-            # Or just hack it: we need the loop running.
+            # Launch in background after a short delay to let loop start
+            async def post_start(app):
+                 start_reaper_task(app.bot, saved_id)
             
-            # Better approach: Add a `post_init` function to the builder
-            async def post_init(app):
-                start_reaper_task(app.bot, saved_id)
+            # Since we can't easily hook into 'post_init' on an already built app without rebuilding,
+            # and rebuilding complicates handler logic, we'll just queue it.
+            # Actually, we can just start it directly if we have the loop.
+            # But the loop starts inside run_polling().
+            # Workaround: Use post_init with a rebuild if saved_id exists.
             
-            application = ApplicationBuilder().token(TOKEN).post_init(post_init).read_timeout(60).write_timeout(60).build()
-            
-            # Re-add handlers to this new app instance (since we rebuilt it)
+            application = ApplicationBuilder().token(TOKEN).read_timeout(60).write_timeout(60).post_init(post_start).build()
+            # Re-add handlers (builder creates new instance)
             application.add_handler(CommandHandler("start", start_command))
             application.add_handler(CallbackQueryHandler(handle_clipboard_callback, pattern="^copy_"))
             application.add_handler(CallbackQueryHandler(handle_zombie_callback, pattern="^z(kill|allow|ignore)_"))
             application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+
+        application.run_polling()
             
-            application.run_polling()
-        else:
-            # Fallback for fresh install
-            application.run_polling()
-            
-    except Exception as e:
     except Exception as e:
         print(f"❌ Critical Error: {e}")
