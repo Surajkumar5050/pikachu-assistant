@@ -64,7 +64,13 @@ COMMANDS:
 15. Find File: {"action": "find_file", "time_query": "yesterday afternoon", "file_type": "pdf", "keyword": "report"}
     (Triggers: find that file, get me that PDF, that document I opened, file I was working on, send that file, give me that Excel, that image I saw)
 
-16. Chat:  {"action": "general_chat", "response": "text"}
+16. Media Control: 
+    - Playback: {"action": "control_media", "media_action": "playpause/nexttrack/prevtrack/volumemute"}
+      (Triggers: pause music, next song, previous track, skip song, play music, mute audio)
+    - Volume: {"action": "set_volume", "level": 50}
+      (Triggers: volume 50, set volume to 80, volume to 30 percent)
+
+17. Chat:  {"action": "general_chat", "response": "text"}
 
 *** PRIORITY RULE: "CLICK ON X" ***
 If user says "click on [something]", "press [something]", "tap [something]", "type [text]", or mentions "search" in the context of input:
@@ -196,7 +202,36 @@ def process_command(user_input):
 
         elif "screenshot" in lower and ("tab" in lower or "browser" in lower or "page" in lower):
             data = {"action": "browser_control", "command": "screenshot", "query": user_input}
-
+        
+        # MEDIA CONTROLLER - Playback Controls
+        # {"pause music", "next song", "previous track", "play music"}
+        elif any(x in lower for x in ["pause music", "pause song", "stop music", "stop song", "pause the music", "pause the song"]):
+            data = {"action": "control_media", "media_action": "playpause"}
+        
+        elif any(x in lower for x in ["play music", "play song", "resume music", "unpause", "play the music", "play the song"]) and "youtube" not in lower and "video" not in lower:
+            data = {"action": "control_media", "media_action": "playpause"}
+        
+        elif any(x in lower for x in ["next track", "next song", "skip song", "skip track", "next music", "play next"]):
+            data = {"action": "control_media", "media_action": "nexttrack"}
+        
+        elif any(x in lower for x in ["previous track", "previous song", "prev track", "prev song", "last song", "go back"]):
+            data = {"action": "control_media", "media_action": "prevtrack"}
+        
+        elif any(x in lower for x in ["mute audio", "mute sound", "mute volume", "silence", "mute the volume"]) and "tab" not in lower:
+            data = {"action": "control_media", "media_action": "volumemute"}
+        
+        # MEDIA CONTROLLER - Volume Control
+        # {"volume 50", "set volume to 80", "volume to 30 percent"}
+        elif "volume" in lower and any(char.isdigit() for char in user_input):
+            import re
+            # Extract number from command
+            numbers = re.findall(r'\d+', user_input)
+            if numbers:
+                level = int(numbers[0])
+                # Ensure it's within valid range
+                level = max(0, min(100, level))
+                data = {"action": "set_volume", "level": level}
+        
         # 11. Force Find File (Context-Aware File Finder)
         # Detect file finding queries - "find that", "get me that", "send that", "that file", etc.
         find_triggers = ["find that", "get that", "send that", "give me that", "that file", "that pdf", "that document", "that excel", "that image", "that video", "i was reading", "i opened", "i was working on", "file i", "document i"]
