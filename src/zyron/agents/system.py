@@ -52,31 +52,37 @@ PROCESS_NAMES = {
     "zoom": "Zoom.exe"
 }
 
-# Caffeine Mode - Which Keeps system awake by simulating mouse activity
+# Caffeine Mode - Which Keeps system awake by preventing sleep and screen timeout
 CAFFEINE_ACTIVE = False
+
+# Windows constants for SetThreadExecutionState
+ES_CONTINUOUS = 0x80000000
+ES_SYSTEM_REQUIRED = 0x00000001
+ES_DISPLAY_REQUIRED = 0x00000002
 
 def _caffeine_loop():
     """
-    Background thread that jiggles mouse imperceptibly to prevent sleep.
-    Runs while CAFFEINE_ACTIVE is True.
+    Background thread that prevents system sleep and screen timeout.
+    Uses Windows SetThreadExecutionState API for reliable prevention.
     """
     global CAFFEINE_ACTIVE
+    import ctypes
+    
     print("☕ Caffeine thread started - keeping system awake...")
     
-    while CAFFEINE_ACTIVE:
-        try:
-            # More pronounced mouse movement to reset Windows idle timer
-            pyautogui.moveRel(10, 0)
-            time.sleep(0.5)  # Brief pause between movements
-            pyautogui.moveRel(-10, 0)
-            timestamp = time.strftime('%H:%M:%S')
-            print(f"   🔄 Jiggle at {timestamp}... (system awake)")
-        except Exception as e:
-            print(f"   ⚠️ Jiggle error: {e}")
-        
-        # Wait 60 seconds before next jiggle
-        time.sleep(60)
+    # Set execution state to prevent sleep and display timeout
+    ctypes.windll.kernel32.SetThreadExecutionState(
+        ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
+    )
     
+    while CAFFEINE_ACTIVE:
+        # Periodically verify we're still preventing sleep
+        timestamp = time.strftime('%H:%M:%S')
+        print(f"   🔄 Awake check at {timestamp}... (display + system)")
+        time.sleep(60)  # Check every minute
+    
+    # Reset execution state when disabling
+    ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS)
     print("💤 Caffeine thread stopped.")
 
 def toggle_caffeine(state: bool):
