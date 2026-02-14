@@ -350,6 +350,32 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             command_json = {"action": "focus_mode", "sub_action": "status"}
 
+    # --- CAFFEINE MODE (KEEP AWAKE) COMMANDS ---
+    elif "/caffeine" in lower_text:
+        # Parse argument: on or off
+        parts = lower_text.split()
+        if len(parts) >= 2:
+            arg = parts[1].strip()
+            if arg == "on":
+                command_json = {"action": "toggle_caffeine", "state": True}
+            elif arg == "off":
+                command_json = {"action": "toggle_caffeine", "state": False}
+            else:
+                # Invalid arguments
+                await update.message.reply_text(
+                    "⚠️ Invalid command. Use:\n• `/caffeine on` - Enable keep-awake mode\n• `/caffeine off` - Disable keep-awake mode",
+                    reply_markup=get_main_keyboard()
+                )
+                return
+        else:
+            # No argument provided
+            await update.message.reply_text(
+                "☕ **Caffeine Mode (Keep Awake)**\n\nPrevents system from sleeping.\n\n**Usage:**\n• `/caffeine on` - Keep system awake\n• `/caffeine off` - Allow normal sleep",
+                parse_mode='Markdown',
+                reply_markup=get_main_keyboard()
+            )
+            return
+
     # --- NAVIGATION AGENT TRIGGERS ---
     elif "/read" in lower_text or "read page" in lower_text:
         command_json = {"action": "browser_nav", "sub_action": "read"}
