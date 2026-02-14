@@ -107,6 +107,7 @@ def toggle_caffeine(state: bool):
             return "💤 Caffeine Mode is already off. System can sleep normally."
         
         CAFFEINE_ACTIVE = False
+        print("💤 Stopping caffeine mode...")
         return "💤 Caffeine Mode Disabled. System can now sleep normally."
 
 def get_laptop_location():
