@@ -91,7 +91,7 @@ def get_main_keyboard():
         [KeyboardButton("/location"), KeyboardButton("/recordaudio")],
         [KeyboardButton("/clear_bin"), KeyboardButton("/storage")], 
         [KeyboardButton("/activities"), KeyboardButton("/copied_texts")],
-        [KeyboardButton("/focus_mode_on"), KeyboardButton("/blacklist")]
+        [KeyboardButton("/media"), KeyboardButton("/focus_mode_on"), KeyboardButton("/blacklist")]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -201,6 +201,87 @@ async def handle_zombie_callback(update: Update, context: ContextTypes.DEFAULT_T
     elif action == "zignore":
         # Ignore (Just delete message for now, logic later)
         await query.edit_message_text("⏳ Ignored for now.")
+
+
+@auth_required
+async def handle_media_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handles button clicks on Media Controller."""
+    query = update.callback_query
+    await query.answer()
+    
+    data = query.data
+    
+    # Importing system--functions
+    from zyron.agents.system import control_media, set_volume
+    from telegram.error import BadRequest
+    
+    # Handle media playback controls
+    if data.startswith("media_"):
+        action = data.replace("media_", "")
+        
+        # Mapping to actual media actions
+        action_map = {
+            "prev": "prevtrack",
+            "play": "playpause",
+            "next": "nexttrack"
+        }
+        
+        media_action = action_map.get(action, action)
+        result = control_media(media_action)
+        
+        # Update message with confirmation
+        try:
+            await query.edit_message_text(
+                f"🎵 **Media Controller**\n\n✅ {result}",
+                parse_mode='Markdown',
+                reply_markup=query.message.reply_markup  # Keep the keyboard
+            )
+        except BadRequest:
+            # Message content is the same, ignore this error
+            pass
+    
+    # Volume controls handler
+    elif data.startswith("vol_"):
+        level_str = data.replace("vol_", "")
+        
+        # Smart mute toggle for vol_0
+        if level_str == "0":
+            from pycaw.pycaw import AudioUtilities
+            
+            # Check current volume to decide mute or unmute
+            try:
+                devices = AudioUtilities.GetSpeakers()
+                volume = devices.EndpointVolume
+                current_level = int(volume.GetMasterVolumeLevelScalar() * 100)
+                
+                if current_level > 0:
+                    # Currently audible, so mute it
+                    result = set_volume(0)
+                    action_msg = "🔇 Muted"
+                else:
+                    # Currently muted, so unmute to 50%
+                    result = set_volume(50)
+                    action_msg = "🔊 Unmuted to 50%"
+            except Exception as e:
+                # Fallback to simple toggle
+                result = control_media("volumemute")
+                action_msg = "🔇 Toggled mute"
+        else:
+            # Regular volume setting
+            level = int(level_str)
+            result = set_volume(level)
+            action_msg = f"🔊 Volume set to {level}%"
+        
+        # Updates message with confirmation
+        try:
+            await query.edit_message_text(
+                f"🎵 **Media Controller**\n\n✅ {action_msg}",
+                parse_mode='Markdown',
+                reply_markup=query.message.reply_markup  # Keep the keyboard
+            )
+        except BadRequest:
+            # Message content is the same, ignore this error
+            pass
 
 
 async def camera_monitor_loop(bot, chat_id):
@@ -326,6 +407,32 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         command_json = {"action": "check_storage"}
     elif "/activities" in lower_text or "activities" in lower_text:
         command_json = {"action": "get_activities"}
+    
+    # --- MEDIA CONTROLLER ---
+    elif "/media" in lower_text:
+        # Send inline keyboard for media controls
+        keyboard = [
+            [
+                InlineKeyboardButton("⏮️ Prev", callback_data="media_prev"),
+                InlineKeyboardButton("⏯️ Play/Pause", callback_data="media_play"),
+                InlineKeyboardButton("⏭️ Next", callback_data="media_next")
+            ],
+            [
+                InlineKeyboardButton("🔇 Mute", callback_data="vol_0"),
+                InlineKeyboardButton("🔉 30%", callback_data="vol_30"),
+                InlineKeyboardButton("🔉 60%", callback_data="vol_60"),
+                InlineKeyboardButton("🔊 100%", callback_data="vol_100")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await update.message.reply_text(
+            "🎵 **Media Controller**\n\nControl your media playback and volume:",
+            parse_mode='Markdown',
+            reply_markup=reply_markup
+        )
+        return  # Exit early since we handled this
+    
     # --- NEW CLIPBOARD TRIGGER ---
     elif "/copied_texts" in lower_text or any(x in lower_text for x in ["copied texts", "clipboard history", "what did i copy", "show copied"]):
         command_json = {"action": "get_clipboard_history"}
@@ -1465,6 +1572,7 @@ if __name__ == "__main__":
         application.add_handler(CommandHandler("start", start_command))
         application.add_handler(CallbackQueryHandler(handle_clipboard_callback, pattern="^copy_"))
         application.add_handler(CallbackQueryHandler(handle_zombie_callback, pattern="^z(kill|allow|ignore)_"))
+        application.add_handler(CallbackQueryHandler(handle_media_callback, pattern="^(media_|vol_)"))
         application.add_handler(MessageHandler(filters.TEXT, handle_message))
         
         # Run
@@ -1485,6 +1593,7 @@ if __name__ == "__main__":
             application.add_handler(CommandHandler("start", start_command))
             application.add_handler(CallbackQueryHandler(handle_clipboard_callback, pattern="^copy_"))
             application.add_handler(CallbackQueryHandler(handle_zombie_callback, pattern="^z(kill|allow|ignore)_"))
+            application.add_handler(CallbackQueryHandler(handle_media_callback, pattern="^(media_|vol_)"))
             application.add_handler(MessageHandler(filters.TEXT, handle_message))
 
         application.run_polling()

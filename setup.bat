@@ -176,8 +176,8 @@ if exist "%STARTUP_FOLDER%\PikachuAgent.lnk" del "%STARTUP_FOLDER%\PikachuAgent.
 if exist "%STARTUP_FOLDER%\ZyronAssistant.lnk" del "%STARTUP_FOLDER%\ZyronAssistant.lnk" >nul 2>&1
 
 echo.
-echo     !C_![?] SYSTEM PROMPT:!C_!
-echo     !C_!Activate automatic resonance on PC boot?!C_!
+echo     !C_CYN![?] SYSTEM PROMPT:!C_RST!
+echo     !C_BCYN!Activate automatic resonance on PC boot?!C_RST!
 echo.
 choice /c YN /m "     Enable Autostart? "
 
@@ -232,4 +232,3 @@ set "text=%~1"
 powershell -NoProfile -Command "$text='%text%'; for ($i=0; $i -lt $text.Length; $i++) { Write-Host $text[$i] -ForegroundColor Cyan -NoNewline; Start-Sleep -Milliseconds 15 }"
 echo.
 exit /b
-
